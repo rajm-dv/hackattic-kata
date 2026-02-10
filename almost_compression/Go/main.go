@@ -2,32 +2,47 @@ package main
 
 import (
 	"bufio"
-	"strings"
 	"fmt"
 	"os"
 	"strconv"
 )
 
-func main() {
-	reader := bufio.NewReader(os.Stdin)
-	text, _ := reader.ReadString('\n')
-
-	cnt := 1
-	finalText := ""
-	for i := 1; i < len(text); i++ {
-		if text[i] == text[i-1] {
-			cnt += 1
-		} else {
-			if cnt > 2 {
-				finalText = finalText + strconv.Itoa(cnt) + string(text[i-1])
-			} else if cnt == 2 {
-				finalText = finalText + strings.Repeat(string(text[i-1]), 2)
-			}	else {
-				finalText = finalText + string(text[i-1])
+func compress(input string) string {
+	compressedText := ""
+	i := 0
+	n := len(input)
+	for i < n {
+		cnt := 1
+		j := i + 1
+		isSame := true
+		for j < n && isSame {
+			if input[i] == input[j] {
+				cnt += 1
+				j += 1
+			} else {
+				isSame = false
 			}
-			cnt = 1
 		}
+		if cnt > 2 {
+			compressedText = compressedText + strconv.Itoa(cnt)
+			compressedText += string(input[i])
+		} else if cnt == 2 {
+			compressedText += string(input[i])
+			compressedText += string(input[i])
+		} else {
+			compressedText += string(input[i])
+		}
+		i = j
 	}
+	return compressedText
+}
 
-	fmt.Println(finalText)
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		compressedText := compress(line)
+		fmt.Println(compressedText)
+	}
 }
